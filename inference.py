@@ -67,7 +67,7 @@ def run() -> None:
 
     api_base = os.getenv("API_BASE_URL", "")
     model_name = os.getenv("MODEL_NAME", "")
-    hf_token = os.getenv("HF_TOKEN", "")
+    hf_token = os.getenv("HF_TOKEN")
 
     tasks = get_tasks()
 
