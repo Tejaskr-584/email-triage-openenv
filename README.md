@@ -1,11 +1,10 @@
 ---
-
 title: Email Triage RL Environment
 emoji: 📧
 colorFrom: blue
 colorTo: green
 sdk: docker
------------
+---
 
 # Email Triage RL Environment
 
