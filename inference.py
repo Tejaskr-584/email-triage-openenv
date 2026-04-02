@@ -15,20 +15,39 @@ def baseline_policy(email_text: str) -> str:
         "normal": 0
     }
 
-    # spam keywords
-    for word in ["free", "won", "prize", "bank details", "click this link", "offer", "winner", "verify account", "suspended", "login now"]:
-        if word in text:
-            scores["spam"] += 2
+    # 🔥 STRONG spam keywords (boosted)
+    spam_keywords = [
+        "free", "won", "prize", "bank details", "click this link",
+        "offer", "winner", "verify account", "suspended", "login now",
+        "phish", "finance alert", "wire transfer", "account issue",
+        "unauthorized", "security alert", "urgent action required",
+        "confirm account", "password reset"
+    ]
 
     # urgent keywords
-    for word in ["incident", "timeout", "rollback", "within the next hour", "failures", "urgent", "asap", "immediately", "action required"]:
+    urgent_keywords = [
+        "incident", "timeout", "rollback", "within the next hour",
+        "failures", "urgent", "asap", "immediately", "action required"
+    ]
+
+    # important keywords
+    important_keywords = [
+        "invoice", "due", "reminder", "late fees",
+        "meeting", "project", "deadline", "client"
+    ]
+
+    # 🔥 Apply scoring
+    for word in spam_keywords:
+        if word in text:
+            scores["spam"] += 3   # higher weight
+
+    for word in urgent_keywords:
         if word in text:
             scores["urgent"] += 2
 
-    # important keywords
-    for word in ["invoice", "due", "reminder", "late fees", "meeting", "project", "deadline", "client"]:
+    for word in important_keywords:
         if word in text:
-            scores["important"] += 2
+            scores["important"] += 1   # lower weight
 
     # if nothing matches → normal
     if all(v == 0 for v in scores.values()):
