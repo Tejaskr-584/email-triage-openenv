@@ -15,7 +15,7 @@ def baseline_policy(email_text: str) -> str:
     ]):
         return "spam"
 
-    # ✅ scoring dictionary
+    # scoring dictionary
     scores = {
         "spam": 0,
         "urgent": 0,
@@ -42,7 +42,7 @@ def baseline_policy(email_text: str) -> str:
         "meeting", "project", "deadline", "client"
     ]
 
-    # 🔥 scoring logic
+    # scoring logic
     for word in spam_keywords:
         if word in text:
             scores["spam"] += 3
@@ -70,38 +70,38 @@ def run() -> None:
     hf_token = os.getenv("HF_TOKEN", "")
 
     tasks = get_tasks()
-    total_grade_score = 0.0
-    total_env_reward = 0.0
-
-    print("[START]", flush=True)
 
     for task in tasks:
         sample = EmailSample(text=task.input_email, expected_label=task.expected_output)
         env = EmailTriageEnv(sample=sample)
 
         observation = env.reset()
+
+        # START log (correct format)
+        print(f"[START] task={task.name} env=email_env model=baseline", flush=True)
+
+        # agent action
         action = baseline_policy(observation)
+
+        # step
         _next_observation, reward, done, info = env.step(action)
-        grade_score = task.grader(action, task.expected_output)
 
-        total_grade_score += grade_score
-        total_env_reward += reward
+        step_num = 1
+        error = "null"
 
-        print(f"[STEP] task={task.name}", flush=True)
-        print(f"[STEP] difficulty={task.difficulty}", flush=True)
-        print(f"[STEP] predicted={action}", flush=True)
-        print(f"[STEP] expected={task.expected_output}", flush=True)
-        print(f"[STEP] score={grade_score:.2f}", flush=True)
-        print(f"[STEP] reward={reward:.2f}", flush=True)
-        print(f"[STEP] done={done}", flush=True)
+        # STEP log (correct format)
+        print(
+            f"[STEP] step={step_num} action={action} reward={reward:.2f} done={str(done).lower()} error={error}",
+            flush=True
+        )
 
-    n = len(tasks)
+        success = reward > 0.5
 
-    print(f"[STEP] total_tasks={n}", flush=True)
-    print(f"[STEP] avg_score={total_grade_score / n:.2f}", flush=True)
-    print(f"[STEP] avg_reward={total_env_reward / n:.2f}", flush=True)
-
-    print("[END]", flush=True)
+        # END log (correct format)
+        print(
+            f"[END] success={str(success).lower()} steps={step_num} rewards={reward:.2f}",
+            flush=True
+        )
 
 
 if __name__ == "__main__":
