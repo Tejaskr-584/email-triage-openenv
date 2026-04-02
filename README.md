@@ -1,3 +1,10 @@
+---
+title: Email Triage RL Environment
+emoji: 📧
+colorFrom: blue
+colorTo: green
+sdk: docker
+---
 # Email Triage RL Environment
 
 This project is an OpenEnv-compliant environment for classifying emails into:
