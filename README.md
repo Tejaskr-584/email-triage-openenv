@@ -1,5 +1,3 @@
-## 🔗 Live Demo
-https://huggingface.co/spaces/kratos584/email-triage-env
 ---
 title: Email Triage RL Environment
 emoji: 📧
@@ -7,6 +5,9 @@ colorFrom: blue
 colorTo: green
 sdk: docker
 ---
+
+## 🔗 Live Demo
+https://huggingface.co/spaces/kratos584/email-triage-env
 
 # Email Triage RL Environment
 
