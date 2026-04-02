@@ -2,7 +2,7 @@ import os
 import random
 from tasks.tasks import get_tasks
 from env.email_env import EmailSample, EmailTriageEnv
-
+import time
 
 def baseline_policy(email_text: str) -> str:
     text = email_text.lower()
@@ -62,5 +62,9 @@ def run() -> None:
     print("[END]", flush=True)
 
 
+
+
 if __name__ == "__main__":
     run()
+    while True:
+        time.sleep(60)
