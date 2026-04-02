@@ -1,0 +1,54 @@
+name: email-triage-rl-environment
+title: Email Triage RL Environment
+version: 0.1.0
+description: >
+  Backend-only OpenEnv-compliant environment for classifying real-world emails
+  into spam, important, urgent, and normal categories with reward feedback.
+
+runtime:
+  language: python
+  entrypoint: python inference.py
+
+environment:
+  class_path: env.email_env.EmailTriageEnv
+  api:
+    - reset
+    - step
+  observation_space:
+    type: text
+    description: Raw email body and subject as a single string.
+  action_space:
+    type: discrete_labels
+    labels:
+      - spam
+      - important
+      - urgent
+      - normal
+  reward:
+    correct: 1.0
+    partial: 0.5
+    partial_additional_values:
+      - 0.3
+      - 0.2
+    wrong: -1.0
+  episode:
+    terminal_after_single_classification: true
+
+tasks:
+  source: tasks.tasks:get_tasks
+  difficulties:
+    - easy
+    - medium
+    - hard
+  grader_score_range:
+    min: 0.0
+    max: 1.0
+
+resources:
+  cpu: "2"
+  memory_gb: "8"
+  expected_inference_time_minutes_lt: 20
+
+deployment:
+  dockerfile: Dockerfile
+  huggingface_spaces_compatible: true
