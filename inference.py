@@ -4,20 +4,37 @@ from tasks.tasks import get_tasks
 from env.email_env import EmailSample, EmailTriageEnv
 import time
 
+
 def baseline_policy(email_text: str) -> str:
     text = email_text.lower()
 
-    spam_keywords = ["free", "won", "prize", "bank details", "click this link"]
-    urgent_keywords = ["incident", "timeout", "rollback", "within the next hour", "failures"]
-    important_keywords = ["invoice", "due", "reminder", "late fees"]
+    scores = {
+        "spam": 0,
+        "urgent": 0,
+        "important": 0,
+        "normal": 0
+    }
 
-    if any(k in text for k in spam_keywords):
-        return "spam"
-    if any(k in text for k in urgent_keywords):
-        return "urgent"
-    if any(k in text for k in important_keywords):
-        return "important"
-    return "normal"
+    # spam keywords
+    for word in ["free", "won", "prize", "bank details", "click this link", "offer", "winner", "verify account", "suspended", "login now"]:
+        if word in text:
+            scores["spam"] += 2
+
+    # urgent keywords
+    for word in ["incident", "timeout", "rollback", "within the next hour", "failures", "urgent", "asap", "immediately", "action required"]:
+        if word in text:
+            scores["urgent"] += 2
+
+    # important keywords
+    for word in ["invoice", "due", "reminder", "late fees", "meeting", "project", "deadline", "client"]:
+        if word in text:
+            scores["important"] += 2
+
+    # if nothing matches → normal
+    if all(v == 0 for v in scores.values()):
+        scores["normal"] += 1
+
+    return max(scores, key=scores.get)
 
 
 def run() -> None:
@@ -60,8 +77,6 @@ def run() -> None:
     print(f"[STEP] avg_reward={total_env_reward / n:.2f}", flush=True)
 
     print("[END]", flush=True)
-
-
 
 
 if __name__ == "__main__":
