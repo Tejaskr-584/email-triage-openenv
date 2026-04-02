@@ -8,6 +8,14 @@ import time
 def baseline_policy(email_text: str) -> str:
     text = email_text.lower()
 
+    # 🚨 PRIORITY RULE (phishing / finance → spam)
+    if any(word in text for word in [
+        "phish", "finance", "wire transfer", "account issue",
+        "unauthorized", "security alert", "bank", "payment"
+    ]):
+        return "spam"
+
+    # ✅ scoring dictionary
     scores = {
         "spam": 0,
         "urgent": 0,
@@ -15,12 +23,10 @@ def baseline_policy(email_text: str) -> str:
         "normal": 0
     }
 
-    # 🔥 STRONG spam keywords (boosted)
+    # spam keywords
     spam_keywords = [
         "free", "won", "prize", "bank details", "click this link",
         "offer", "winner", "verify account", "suspended", "login now",
-        "phish", "finance alert", "wire transfer", "account issue",
-        "unauthorized", "security alert", "urgent action required",
         "confirm account", "password reset"
     ]
 
@@ -36,10 +42,10 @@ def baseline_policy(email_text: str) -> str:
         "meeting", "project", "deadline", "client"
     ]
 
-    # 🔥 Apply scoring
+    # 🔥 scoring logic
     for word in spam_keywords:
         if word in text:
-            scores["spam"] += 3   # higher weight
+            scores["spam"] += 3
 
     for word in urgent_keywords:
         if word in text:
@@ -47,9 +53,9 @@ def baseline_policy(email_text: str) -> str:
 
     for word in important_keywords:
         if word in text:
-            scores["important"] += 1   # lower weight
+            scores["important"] += 1
 
-    # if nothing matches → normal
+    # default → normal
     if all(v == 0 for v in scores.values()):
         scores["normal"] += 1
 
