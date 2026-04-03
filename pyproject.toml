@@ -1,0 +1,14 @@
+[project]
+name = "email-triage-openenv"
+version = "0.1.0"
+description = "Email Triage RL Environment"
+authors = [
+    { name = "Tejas" }
+]
+dependencies = [
+    "openai",
+    "pydantic"
+]
+
+[tool.setuptools]
+packages = ["env", "tasks"]
