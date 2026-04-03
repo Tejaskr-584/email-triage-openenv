@@ -2,7 +2,6 @@ import os
 import random
 from tasks.tasks import get_tasks
 from env.email_env import EmailSample, EmailTriageEnv
-import time
 
 
 def baseline_policy(email_text: str) -> str:
@@ -15,7 +14,6 @@ def baseline_policy(email_text: str) -> str:
     ]):
         return "spam"
 
-    # scoring dictionary
     scores = {
         "spam": 0,
         "urgent": 0,
@@ -23,26 +21,22 @@ def baseline_policy(email_text: str) -> str:
         "normal": 0
     }
 
-    # spam keywords
     spam_keywords = [
         "free", "won", "prize", "bank details", "click this link",
         "offer", "winner", "verify account", "suspended", "login now",
         "confirm account", "password reset"
     ]
 
-    # urgent keywords
     urgent_keywords = [
         "incident", "timeout", "rollback", "within the next hour",
         "failures", "urgent", "asap", "immediately", "action required"
     ]
 
-    # important keywords
     important_keywords = [
         "invoice", "due", "reminder", "late fees",
         "meeting", "project", "deadline", "client"
     ]
 
-    # scoring logic
     for word in spam_keywords:
         if word in text:
             scores["spam"] += 3
@@ -55,7 +49,6 @@ def baseline_policy(email_text: str) -> str:
         if word in text:
             scores["important"] += 1
 
-    # default → normal
     if all(v == 0 for v in scores.values()):
         scores["normal"] += 1
 
@@ -77,19 +70,15 @@ def run() -> None:
 
         observation = env.reset()
 
-        # START log (correct format)
         print(f"[START] task={task.name} env=email_env model=baseline", flush=True)
 
-        # agent action
         action = baseline_policy(observation)
 
-        # step
         _next_observation, reward, done, info = env.step(action)
 
         step_num = 1
         error = "null"
 
-        # STEP log (correct format)
         print(
             f"[STEP] step={step_num} action={action} reward={reward:.2f} done={str(done).lower()} error={error}",
             flush=True
@@ -97,15 +86,26 @@ def run() -> None:
 
         success = reward > 0.5
 
-        # END log (correct format)
         print(
             f"[END] success={str(success).lower()} steps={step_num} rewards={reward:.2f}",
             flush=True
         )
 
 
+# 🔥 HF FIX (SERVER)
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"OK")
+
+
 if __name__ == "__main__":
     run()
-    import time
-    while True:
-        time.sleep(60)
+
+    print("Starting server on port 7860...")
+
+    server = HTTPServer(("0.0.0.0", 7860), Handler)
+    server.serve_forever()
