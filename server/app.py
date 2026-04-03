@@ -1,5 +1,6 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
+
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -11,6 +12,11 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(b"OK")
 
-def app():
+
+def main():
     server = HTTPServer(("0.0.0.0", 7860), Handler)
     server.serve_forever()
+
+
+if __name__ == "__main__":
+    main()
