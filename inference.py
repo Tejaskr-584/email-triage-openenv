@@ -118,18 +118,23 @@ def start_server():
     server.serve_forever()
 
 
+
+
 def main():
+    # Prevent double execution
+    if hasattr(main, "already_run"):
+        return
+    main.already_run = True
+
     # Start server in background
     thread = threading.Thread(target=start_server, daemon=True)
     thread.start()
 
-    # Small delay for server startup
     time.sleep(1)
 
-    # Run evaluation ONCE
+    # Run ONLY once
     run()
 
-    # Give server a little time for POST requests
     time.sleep(5)
 
     print("Shutting down cleanly...", flush=True)
