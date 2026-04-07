@@ -137,13 +137,14 @@ def main():
 
     time.sleep(1)
 
-    # Run once
+    # Run evaluation ONCE
     run()
 
-    # Wait for POST check
-    time.sleep(15)
+    print("Server running... waiting for validator", flush=True)
 
-    print("Shutting down cleanly...", flush=True)
+    # 🔥 KEEP SERVER ALIVE FOREVER
+    while True:
+        time.sleep(10)
 
 if __name__ == "__main__":
     main()
