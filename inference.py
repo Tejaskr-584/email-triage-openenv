@@ -119,22 +119,20 @@ def start_server():
 
 
 def main():
-    # Start server
+    # Start server in background
     thread = threading.Thread(target=start_server, daemon=True)
     thread.start()
 
-    # Wait for server to be ready
-    time.sleep(2)
+    # Small delay for server startup
+    time.sleep(1)
 
-    # 🔥 RUN ONLY ONCE EVER
-    if not hasattr(main, "executed"):
-        main.executed = True
-        run()
+    # Run evaluation ONCE
+    run()
 
-    # 🔥 KEEP PROCESS ALIVE (but light)
-    while True:
-        time.sleep(10)
+    # Give server a little time for POST requests
+    time.sleep(5)
 
+    print("Shutting down cleanly...", flush=True)
 
 if __name__ == "__main__":
     main()
