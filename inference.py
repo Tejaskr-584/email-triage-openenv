@@ -62,7 +62,11 @@ def run() -> None:
         tasks = get_tasks()
 
         for task in tasks:
-            sample = EmailSample(text=task.input_email, expected_label=task.expected_output)
+            sample = EmailSample(
+                text=task.input_email,
+                expected_label=task.expected_output
+            )
+
             env = EmailTriageEnv(sample=sample)
 
             observation = env.reset()
@@ -92,71 +96,11 @@ def run() -> None:
         print(f"[ERROR] run() failed: {e}", flush=True)
 
 
-# 🔥 SAFE SERVER
-from http.server import HTTPServer, BaseHTTPRequestHandler
-import json
-
-
-class Handler(BaseHTTPRequestHandler):
-
-    def do_GET(self):
-        try:
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(b"OK")
-        except Exception as e:
-            print(f"[ERROR] GET failed: {e}", flush=True)
-
-    def do_POST(self):
-        try:
-            content_length = int(self.headers.get('Content-Length', 0))
-            body = self.rfile.read(content_length) if content_length > 0 else b''
-
-            data = {}
-            if body:
-                try:
-                    data = json.loads(body.decode())
-                except Exception:
-                    data = {}
-
-            # Always return valid response (NO CRASH)
-            response = {
-                "status": "ok"
-            }
-
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(json.dumps(response).encode())
-
-        except Exception as e:
-            print(f"[ERROR] POST failed: {e}", flush=True)
-            try:
-                self.send_response(500)
-                self.end_headers()
-                self.wfile.write(b"error")
-            except:
-                pass
-
-
 def main():
     try:
         run()
     except Exception as e:
         print(f"[ERROR] run() crashed: {e}", flush=True)
-
-    print("Starting server...", flush=True)
-
-    try:
-        port = int(os.environ.get("PORT", 7860))
-        server = HTTPServer(("0.0.0.0", port), Handler)
-        print(f"Server started on port {port}", flush=True)
-        server.serve_forever()
-
-    except Exception as e:
-        print(f"[FATAL] Server failed: {e}", flush=True)
-        # DO NOT crash silently
-        while True:
-            pass
 
 
 if __name__ == "__main__":
