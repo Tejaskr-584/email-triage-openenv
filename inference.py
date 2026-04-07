@@ -94,23 +94,61 @@ def run() -> None:
 
 # 🔥 HF FIX (SERVER)
 from http.server import HTTPServer, BaseHTTPRequestHandler
+import json
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"OK")
+        try:
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b"OK")
+        except Exception as e:
+            print(f"Error in do_GET: {e}", flush=True)
 
     def do_POST(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"OK")
+        try:
+            content_length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(content_length) if content_length > 0 else b''
+            
+            # Safely parse JSON if body exists
+            if body:
+                try:
+                    json.loads(body)
+                except json.JSONDecodeError:
+                    pass
+            
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b"OK")
+        except Exception as e:
+            print(f"Error in do_POST: {e}", flush=True)
+            try:
+                self.send_error(500)
+            except:
+                pass
+
+
+def main():
+    try:
+        run()
+    except Exception as e:
+        print(f"Error during run(): {e}", flush=True)
+
+    print("Starting server...", flush=True)
+
+    try:
+        port = int(os.environ.get("PORT", 7860))
+        print(f"Attempting to start server on port {port}...", flush=True)
+        server = HTTPServer(("0.0.0.0", port), Handler)
+        print(f"Server started successfully on port {port}", flush=True)
+        server.serve_forever()
+    except OSError as e:
+        print(f"Failed to start server: {e}", flush=True)
+        raise SystemExit(1)
+    except Exception as e:
+        print(f"Unexpected error starting server: {e}", flush=True)
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":
-    run()
-
-    print("Starting server on port 7860...")
-
-    server = HTTPServer(("0.0.0.0", 7860), Handler)
-    server.serve_forever()
+    main()
