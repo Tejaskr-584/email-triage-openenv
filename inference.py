@@ -123,13 +123,17 @@ def main():
     thread = threading.Thread(target=start_server, daemon=True)
     thread.start()
 
-    # Wait for server
+    # Wait for server to be ready
     time.sleep(2)
 
-    # 🔥 IMPORTANT: run only once
-    if os.environ.get("RUN_EXECUTED") != "1":
-        os.environ["RUN_EXECUTED"] = "1"
+    # 🔥 RUN ONLY ONCE EVER
+    if not hasattr(main, "executed"):
+        main.executed = True
         run()
+
+    # 🔥 KEEP PROCESS ALIVE (but light)
+    while True:
+        time.sleep(10)
 
 
 if __name__ == "__main__":
