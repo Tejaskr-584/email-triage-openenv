@@ -118,21 +118,21 @@ def start_server():
     server.serve_forever()
 
 
-
-
 def main():
-    # Prevent double execution
-    if hasattr(main, "already_run"):
+    # 🔥 Prevent double execution using ENV FLAG
+    if os.environ.get("ALREADY_RUN") == "1":
+        print("Skipping duplicate execution...", flush=True)
         return
-    main.already_run = True
 
-    # Start server in background
+    os.environ["ALREADY_RUN"] = "1"
+
+    # Start server
     thread = threading.Thread(target=start_server, daemon=True)
     thread.start()
 
     time.sleep(1)
 
-    # Run ONLY once
+    # Run once
     run()
 
     time.sleep(5)
