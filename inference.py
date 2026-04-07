@@ -141,7 +141,7 @@ def main():
     run()
 
     # Wait for POST check
-    time.sleep(5)
+    time.sleep(15)
 
     print("Shutting down cleanly...", flush=True)
 
