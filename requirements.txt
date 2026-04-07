@@ -1,4 +1,1 @@
-# No external dependencies are required for this project.
-# Standard library only.
-openai
-pydantic
+openenv-core>=0.2.0
