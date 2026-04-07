@@ -2,6 +2,7 @@ import os
 import random
 import threading
 import json
+import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 from tasks.tasks import get_tasks
@@ -118,11 +119,14 @@ def start_server():
 
 
 def main():
-    # 🔥 Start server in background (non-blocking)
+    # Start server in background
     thread = threading.Thread(target=start_server, daemon=True)
     thread.start()
 
-    # 🔥 Run evaluation logic
+    # 🔥 FIX: wait for server to be ready
+    time.sleep(2)
+
+    # Run evaluation logic
     run()
 
 
