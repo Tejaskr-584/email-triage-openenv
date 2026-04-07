@@ -119,15 +119,17 @@ def start_server():
 
 
 def main():
-    # Start server in background
+    # Start server
     thread = threading.Thread(target=start_server, daemon=True)
     thread.start()
 
-    # 🔥 FIX: wait for server to be ready
+    # Wait for server
     time.sleep(2)
 
-    # Run evaluation logic
-    run()
+    # 🔥 IMPORTANT: run only once
+    if os.environ.get("RUN_EXECUTED") != "1":
+        os.environ["RUN_EXECUTED"] = "1"
+        run()
 
 
 if __name__ == "__main__":
