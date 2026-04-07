@@ -101,15 +101,27 @@ def run() -> None:
 
 # ✅ Minimal server (for Phase 1 POST check)
 class Handler(BaseHTTPRequestHandler):
+
     def do_GET(self):
         self.send_response(200)
         self.end_headers()
         self.wfile.write(b"OK")
 
     def do_POST(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"OK")
+        try:
+            content_length = int(self.headers.get('Content-Length', 0))
+            if content_length > 0:
+                _ = self.rfile.read(content_length)
+
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b"OK")
+
+        except Exception as e:
+            print(f"[ERROR] POST failed: {e}", flush=True)
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b"OK")
 
 
 def start_server():
@@ -119,14 +131,7 @@ def start_server():
 
 
 def main():
-    # 🔥 Prevent double execution using ENV FLAG
-    if os.environ.get("ALREADY_RUN") == "1":
-        print("Skipping duplicate execution...", flush=True)
-        return
-
-    os.environ["ALREADY_RUN"] = "1"
-
-    # Start server
+    # Start server in background
     thread = threading.Thread(target=start_server, daemon=True)
     thread.start()
 
@@ -135,6 +140,7 @@ def main():
     # Run once
     run()
 
+    # Wait for POST check
     time.sleep(5)
 
     print("Shutting down cleanly...", flush=True)
